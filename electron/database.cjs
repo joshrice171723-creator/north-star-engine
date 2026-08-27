@@ -260,7 +260,12 @@ function createDatabase({ userDataPath, seedPath, applicationDocumentsPath, mast
     return jobToRenderer(db.select().from(jobOpportunities).where(eq(jobOpportunities.id, existing.id)).get());
   }
   function jobNotificationCounts(jobId) { const idValue = bounded(jobId, 160); return { linkedEmailCount: Number(sqlite.prepare('SELECT COUNT(*) AS count FROM email_job_links WHERE job_id = ?').get(idValue).count) || 0, unreadVoiceActivityCount: Number(sqlite.prepare("SELECT COUNT(*) AS count FROM job_detail_activity WHERE job_id = ? AND activity_type = 'google_voice_conversation' AND read_at IS NULL").get(idValue).count) || 0, unreadEmailCount: Number(sqlite.prepare("SELECT COUNT(*) AS count FROM email_job_links l JOIN email_messages e ON e.id = l.email_id WHERE l.job_id = ? AND e.seen_at IS NULL AND e.user_excluded = 0").get(idValue).count) || 0 }; }
-  function jobGoogleVoiceAssignment(jobId) { return sqlite.prepare('SELECT phone_number AS phoneNumber FROM job_phone_assignments WHERE job_id = ? ORDER BY created_at DESC LIMIT 1').get(bounded(jobId, 160)) || {}; }
+  function jobGoogleVoiceAssignment(jobId) {
+    // Google Voice is an optional power-user integration and is not part of
+    // the standalone participant schema.
+    if (careerOnly) return {};
+    return sqlite.prepare('SELECT phone_number AS phoneNumber FROM job_phone_assignments WHERE job_id = ? ORDER BY created_at DESC LIMIT 1').get(bounded(jobId, 160)) || {};
+  }
   function listJobs() { return db.select().from(jobOpportunities).where(and(isNull(jobOpportunities.deletedAt), eq(jobOpportunities.archived, false))).orderBy(asc(jobOpportunities.stage), desc(jobOpportunities.updatedAt)).all().map((row) => ({ ...jobToRenderer(row), ...jobNotificationCounts(row.id), googleVoicePhoneNumber: jobGoogleVoiceAssignment(row.id).phoneNumber || '', googleVoiceContactName: row.contactName || '' })); }
   function requirePipelineJob(jobId) { const job = db.select().from(jobOpportunities).where(and(eq(jobOpportunities.id, bounded(jobId, 160)), isNull(jobOpportunities.deletedAt))).get(); if (!job) throw new Error('Pipeline job not found.'); return job; }
   function requirePostApplicationJob(jobId) { const job = requirePipelineJob(jobId); if (JOB_STAGE_ORDER.indexOf(job.stage) < JOB_STAGE_ORDER.indexOf('applied')) throw new Error('Follow-ups and interview deadlines are available after the job is Applied.'); return job; }

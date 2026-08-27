@@ -1,0 +1,2 @@
+const { createProviderAdapter } = require('./provider.cjs');
+module.exports = createProviderAdapter({ key: 'smartrecruiters', hosts: [/smartrecruiters\.com$/i], urlPattern: /smartrecruiters\.com/i, stepRules: [{ pattern: /personal details|contact/i, step: 'candidate' }, { pattern: /attachments|resume|questions/i, step: 'documents' }, { pattern: /application submitted|thank you/i, step: 'confirmation' }] });

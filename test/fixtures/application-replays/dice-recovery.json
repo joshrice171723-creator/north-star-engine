@@ -1,0 +1,26 @@
+{
+  "name": "dice-recovery",
+  "site": "dice.com",
+  "atsKey": "dice",
+  "steps": [
+    {
+      "idempotencyKey": "replay-dice-1",
+      "stepKey": "open_application",
+      "stepType": "navigate",
+      "outcome": "continue",
+      "reasonCode": "",
+      "source": "playbook"
+    },
+    {
+      "idempotencyKey": "replay-dice-2",
+      "stepKey": "changed_form",
+      "stepType": "fill_field",
+      "outcome": "continue",
+      "reasonCode": "site_change_repaired",
+      "source": "ai_repair",
+      "plan": { "targetFingerprint": "dice-form-v2" },
+      "execution": { "status": "executed" },
+      "verification": { "status": "verified" }
+    }
+  ]
+}

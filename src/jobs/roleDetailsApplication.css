@@ -1,0 +1,78 @@
+.resume-selection-panel{border-color:var(--theme-warning)}.resume-selection-list{display:grid;gap:8px;margin:14px 0}.resume-selection-list label{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid var(--line);border-radius:8px;cursor:pointer}.resume-selection-list label.selected{border-color:var(--theme-accent);background:var(--theme-info-surface)}.resume-selection-list span{display:grid;gap:4px}.resume-selection-list small{color:var(--muted);font-size:10px}.interview-question-list{display:grid;gap:10px;margin-top:14px}.interview-question{position:relative;padding:12px;border:1px solid var(--line);border-radius:8px}.interview-question-heading{display:flex;align-items:flex-start;gap:8px}.interview-question-heading svg{color:var(--theme-accent);flex:none;margin-top:2px}.interview-question-heading b{flex:1;font-size:11px;line-height:1.45}.interview-question-heading small{color:var(--muted);font-size:9px;white-space:nowrap}.interview-question label{display:grid;gap:5px;margin-top:10px;color:var(--muted);font-size:10px}.interview-question textarea{width:100%;box-sizing:border-box;resize:vertical}.interview-question-saved{position:absolute;right:10px;bottom:10px;color:var(--theme-success)}.interview-question-add{display:flex;gap:8px;margin-top:14px}.interview-question-add input{flex:1;min-width:0}.resume-selection-panel>.primary{margin-top:4px}@media(max-width:650px){.interview-question-add{display:grid}.interview-question-heading{display:grid}.interview-question-heading small{white-space:normal}}
+.pre-applied .job-detail-side > .job-detail-panel:nth-child(-n+2){display:none}
+
+/* Keep the details workspace readable when the employer view and assistant are open. */
+.job-details-workspace,
+.job-details-workspace .job-detail-layout,
+.job-details-workspace .job-detail-main,
+.job-details-workspace .job-detail-side,
+.job-details-workspace .job-detail-panel{min-width:0}
+.job-details-workspace{container-type:inline-size}
+.job-details-workspace .job-detail-header{height:auto;min-height:0;padding:16px 2px 22px;background:transparent;align-items:flex-end}
+.job-details-workspace .job-detail-heading h2{margin-top:10px}
+.job-details-workspace .job-detail-heading p{line-height:1.5}
+.job-details-workspace.assistant-open .job-detail-layout{grid-template-columns:minmax(0,1fr) minmax(300px,.72fr)}
+
+/* At narrower desktop widths the role context becomes one reading column instead of
+   allowing its side rail to force the whole workspace wider than its viewport. */
+@media(max-width:1600px){
+  .job-details-workspace.assistant-open .job-detail-layout{grid-template-columns:1fr}
+}
+@container (max-width:900px){
+  .job-details-workspace.assistant-open .job-detail-layout{grid-template-columns:1fr}
+  .job-details-workspace .job-detail-header{align-items:flex-start;flex-direction:column}
+  .job-details-workspace .job-detail-header .jobs-actions{width:100%;justify-content:flex-start}
+}
+
+/* The fit breakdown is intentionally a list: each explanation gets the full card width. */
+.job-fit-score-panel{padding:14px 15px;border-color:color-mix(in srgb,var(--theme-accent) 38%,var(--line));background:color-mix(in srgb,var(--theme-accent) 6%,var(--theme-bg))}
+.job-detail-facts>.job-fit-score-panel{grid-column:1/-1}
+.job-fit-score-heading{margin-bottom:12px;align-items:flex-start}
+.job-fit-score-heading>div{display:grid;gap:4px;min-width:0}
+.job-fit-score-heading>div>b{font-size:13px;letter-spacing:-.01em}
+.job-fit-score-heading small{max-width:42%;line-height:1.35;text-align:right}
+.job-fit-score-list{display:grid;gap:0}
+.job-fit-score-row{display:grid;grid-template-columns:minmax(72px,auto) minmax(0,1fr);gap:12px;align-items:start;padding:11px 0}
+.job-fit-score-row+.job-fit-score-row{border-top:1px solid color-mix(in srgb,var(--line) 72%,transparent)}
+.job-fit-score-row>strong{color:var(--theme-accent);font-size:18px;line-height:1.15;white-space:nowrap}
+.job-fit-score-row>div{display:grid;gap:4px;min-width:0}
+.job-fit-score-row b{color:var(--text);font-size:11px;line-height:1.35}
+.job-fit-score-row span{color:var(--muted);font-size:10px;line-height:1.45;overflow-wrap:anywhere}
+
+@media(max-width:500px){
+  .job-fit-score-row{grid-template-columns:1fr;gap:5px}
+  .job-fit-score-heading{display:block}
+  .job-fit-score-heading small{display:block;max-width:none;margin-top:5px;text-align:left}
+}
+
+/* Use the assistant panel's actual width for its form rather than the outer
+   window breakpoint, keeping fields aligned as the desktop panes resize. */
+.application-browser-panel{container-type:inline-size;min-width:0;padding:20px 18px 44px}
+.application-browser-panel .job-modal-head{position:relative;padding-bottom:14px;border-bottom:1px solid #30394c}
+.application-browser-panel .job-modal-head h3{margin:5px 0 0;font-size:16px}
+.application-browser-panel>.job-search-status{margin:14px 0}
+.assistant-ai-waiting{display:flex;align-items:flex-start;gap:10px;margin:14px 0;padding:12px 13px;border:1px solid #8d75d8;border-radius:9px;background:linear-gradient(135deg,#28213e,#1d2338);color:#f4f0ff;box-shadow:0 6px 20px #00000024}.assistant-ai-waiting svg{flex:none;margin-top:1px;color:#c7b8ff;animation:spin .8s linear infinite}.assistant-ai-waiting div{display:grid;gap:3px}.assistant-ai-waiting b{font-size:11px}.assistant-ai-waiting span{color:#cbc4e4;font-size:10px;line-height:1.4}
+.application-browser-panel>.job-profile-panel{margin:14px 0;padding:15px;border-radius:10px}
+.assistant-section-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.assistant-section-heading>div{display:grid;gap:4px;min-width:0}
+.assistant-section-heading small{color:var(--muted);font-size:9px}
+.application-browser-panel .job-profile-panel>p{margin:6px 0 12px;line-height:1.45}
+.application-browser-panel .job-form-grid{gap:10px;margin-top:0}
+.application-browser-panel .job-field{gap:5px;margin-top:0;min-width:0;font-size:10px}
+.application-browser-panel .job-field input{min-width:0;width:100%;box-sizing:border-box}
+.application-browser-panel .job-profile-panel>.secondary{margin-top:12px}
+.application-browser-panel .job-actions{margin:14px 0}
+.application-browser-panel .job-actions+.job-actions{padding-top:14px;border-top:1px solid #30394c}
+@container (min-width:360px){.application-browser-panel .job-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container (max-width:359px){.application-browser-panel .job-form-grid{grid-template-columns:1fr}}
+.application-browser-splitter.dragging span{width:5px;background:var(--accent)}
+.application-workflow-dock{border-color:#d18b55!important;background:linear-gradient(145deg,#392a24,#25202a)!important}.application-workflow-dock>p{margin:8px 0 12px;line-height:1.45}.application-workflow-links{display:grid;gap:8px}.application-workflow-links>div{display:grid;gap:4px;padding:8px 0;border-top:1px solid #634b4a}.application-workflow-links span{font-size:10px;font-weight:700}.application-workflow-links a{display:inline-flex;align-items:center;gap:4px;color:#ffd18b;font-size:10px;font-weight:700}.application-workflow-links small{color:var(--muted);font-size:9px}
+
+/* The assistant opens alongside the full role context. Reserve space for the
+   employer page only after it is actually opened, avoiding an empty middle pane. */
+.job-details-workspace.assistant-open{margin-right:calc(var(--application-assistant-width) + 24px)}
+.job-details-workspace.assistant-open.employer-page-open{margin-right:calc(var(--application-browser-width) + var(--application-assistant-width) + 24px)}
+.application-workspace-guide{display:block;max-width:620px;margin-top:8px;color:var(--muted);font-size:11px;line-height:1.45}
+.application-browser-panel .assistant-ai-waiting{position:sticky;top:8px;z-index:3}
+.application-browser-panel .job-modal-head::after{content:'AI assistant ready';display:block;width:max-content;margin-top:9px;padding:4px 7px;border:1px solid #3f5e78;border-radius:999px;background:#182535;color:#b9d9ef;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.application-browser-panel:has(.assistant-ai-waiting) .job-modal-head::after{content:'Waiting for AI response';border-color:#8d75d8;background:#28213e;color:#dfd6ff}
+@media(max-width:1250px){.job-details-workspace.assistant-open{margin-right:calc(var(--application-assistant-width) + 14px)}.job-details-workspace.assistant-open.employer-page-open{margin-right:calc(var(--application-browser-width) + var(--application-assistant-width) + 14px)}}

@@ -46,13 +46,7 @@
     "appId": "com.northstar.career",
     "productName": "North Star",
     "asar": true,
-    "files": [
-      "dist/**/*",
-      "electron/**/*",
-      "package.json",
-      "norht_Star_icon.png",
-      "north_Star_logo.png"
-    ],
+    "files": ["dist/**/*", "electron/**/*", "package.json", "norht_Star_icon.png", "north_Star_logo.png"],
     "directories": {
       "output": "release"
     },

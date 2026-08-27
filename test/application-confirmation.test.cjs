@@ -1,0 +1,3 @@
+const test = require('node:test'); const assert = require('node:assert/strict');
+const { detectConfirmation, finalReadiness } = require('../electron/jobs/application-confirmation.cjs');
+test('confirmation is redacted and readiness keeps required blanks blocked', () => { assert.equal(finalReadiness({ fields: [{ required: true, empty: true, label: 'Name' }] }).ready, false); const result = detectConfirmation({ url: 'https://a.test/thanks?secret=1', title: 'Thank you', confirmationNumber: 'ABC' }); assert.equal(result.state, 'confirmed'); assert.equal(result.confirmationUrlRedacted, 'https://a.test/thanks'); });

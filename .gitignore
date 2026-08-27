@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+release/
+release-next/
+out/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Electron / Vite caches
+.vite/
+.cache/
+
+# Local app data and logs
+*.log
+logs/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# North Star runtime files are ignored, but durable project documentation is versioned
+.hermes/*
+!.hermes/PRODUCT_VISION.md
+!.hermes/PROJECT_STATUS.md
+!.hermes/DECISIONS.md
+!.hermes/plans/
+!.hermes/plans/*.md
+!.hermes/handoffs/
+!.hermes/handoffs/*.md
+
+# Electron user data if created inside the project
+user-data/
+backups/
+
+# Temporary captures or diagnostics
+*.har
+*.trace
+screenshots/
+
+# Local portfolio/demo data and generated application documents
+Job Applications/
+output/
+tmp/
+*.pdf
+*.docx
+*.jpeg
+*Screenshot*.png
+*Codex Image*.png
+
+# Personal resume and cover-letter exports
+Joshua_*
+cover_letter-*
+
+# Local-only brand exports; the app uses the checked-in public asset instead
+north_Star_logo.png
+
+# Internal working notes kept locally, outside the portfolio surface
+plans/
+skills/
+ACADEMY_CAPTURE_PHASE.md
+BUG_REPORT.md
+HERMES_HANDOFF_*.md

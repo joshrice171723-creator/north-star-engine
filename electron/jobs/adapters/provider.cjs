@@ -1,0 +1,22 @@
+const { normalizeSnapshot } = require('../application-inspector.cjs');
+const { detectConfirmation } = require('../application-confirmation.cjs');
+
+const SAFE_NAVIGATION = /^(back|next|continue|save and continue|proceed|review)$/i;
+const clean = (value, max = 300) => String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
+const hostOf = (value) => { try { return new URL(value).host.toLowerCase(); } catch { return ''; } };
+const safeUrl = (value) => { try { const url = new URL(value); if (url.protocol !== 'https:') return ''; url.hash = ''; for (const key of [...url.searchParams.keys()]) if (/utm_|source|tracking|ref/i.test(key)) url.searchParams.delete(key); return url.toString(); } catch { return ''; } };
+
+function createProviderAdapter({ key, version = 1, productionEnabled = false, hosts, urlPattern, stepRules = [], accountPattern = /sign in|log in|create account|register/i, duplicatePattern = /already applied|application already exists|duplicate application/i }) {
+  const matches = (context = {}) => { const candidateUrl = String(context.url || context.currentUrl || ''); const host = hostOf(context.host || candidateUrl); return Boolean(host && /^https:\/\//i.test(candidateUrl) && hosts.some((pattern) => pattern.test(host)) && (!urlPattern || urlPattern.test(candidateUrl))); };
+  const detectFormStep = (input = {}) => { const snapshot = normalizeSnapshot(input.snapshot || input); const sample = `${snapshot.pageTitle} ${snapshot.fields.map((field) => `${field.label} ${field.name}`).join(' ')}`; const rule = stepRules.find((candidate) => candidate.pattern.test(sample)); return rule?.step || (snapshot.fields.some((field) => field.required && field.empty) ? 'application' : 'unknown'); };
+  const requiredFields = (input = {}) => normalizeSnapshot(input.snapshot || input).fields.filter((field) => field.required).map((field) => ({ fieldFingerprint: field.fieldFingerprint, label: clean(field.label || field.name, 160), category: field.category }));
+  const locateField = (input = {}, reference = {}) => { const fields = normalizeSnapshot(input.snapshot || input).fields; const matches = fields.filter((field) => (reference.fieldFingerprint && field.fieldFingerprint === reference.fieldFingerprint) || (reference.id && field.id === reference.id) || (reference.name && field.name === reference.name) || (reference.label && field.label.toLowerCase() === String(reference.label).toLowerCase())); return matches.length === 1 ? matches[0] : null; };
+  const supportedControl = (field = {}) => Boolean(['input', 'select', 'textarea'].includes(field.elementType) && !['password', 'file', 'hidden'].includes(field.inputType) && field.category !== 'authentication_captcha');
+  const navigationControls = (input = {}) => normalizeSnapshot(input.snapshot || input).fields.filter((field) => field.elementType === 'button' && SAFE_NAVIGATION.test(field.label)).map((field) => ({ fieldFingerprint: field.fieldFingerprint, label: field.label }));
+  const accountFlow = (input = {}) => { const fields = normalizeSnapshot(input.snapshot || input).fields; return { requiresAccount: fields.some((field) => accountPattern.test(`${field.label} ${field.name}`)), fields: fields.filter((field) => accountPattern.test(`${field.label} ${field.name}`)).map((field) => field.fieldFingerprint) }; };
+  const detectConfirmationForProvider = (input = {}) => { const snapshot = normalizeSnapshot(input.snapshot || input); return detectConfirmation({ url: input.url || snapshot.url, title: snapshot.pageTitle, text: snapshot.fields.map((field) => field.label).join(' '), confirmationNumber: clean(input.confirmationNumber, 160) }); };
+  const duplicateMarkers = (input = {}) => { const sample = clean(`${input.url || ''} ${input.title || ''} ${input.text || ''}`, 2000); return duplicatePattern.test(sample) ? ['duplicate_application_language'] : []; };
+  return { key, version, productionEnabled: Boolean(productionEnabled), matches, normalizeApplicationUrl: safeUrl, detectFormStep, requiredFields, locateField, supportedControl, navigationControls, accountFlow, detectConfirmation: detectConfirmationForProvider, duplicateMarkers, retryPolicy: { navigation: 2, inspection: 2, fill: 1, submit: 0 }, diagnostics: (operation, outcome, reasonCode = '') => ({ adapterKey: key, adapterVersion: version, operation: clean(operation, 80), outcome: clean(outcome, 80), reasonCode: clean(reasonCode, 120) }) };
+}
+
+module.exports = { createProviderAdapter, hostOf, safeUrl, SAFE_NAVIGATION };

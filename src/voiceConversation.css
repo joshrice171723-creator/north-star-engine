@@ -1,0 +1,4 @@
+.voice-test-message-list{display:grid;gap:7px;grid-column:1/-1}
+.voice-test-message-list .voice-test-message{width:fit-content;max-width:82%;grid-column:auto;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface-raised)}
+.voice-test-message-list .voice-test-message.you{justify-self:end;border-color:color-mix(in srgb,var(--accent) 55%,var(--line));background:color-mix(in srgb,var(--accent) 18%,var(--surface-raised))}
+.voice-test-message-list .voice-test-message.luna{justify-self:start;border-top-left-radius:4px}

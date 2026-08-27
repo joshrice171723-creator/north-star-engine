@@ -1,0 +1,2 @@
+const { createProviderAdapter } = require('./provider.cjs');
+module.exports = createProviderAdapter({ key: 'icims-taleo', hosts: [/icims\.com$/i, /taleo\.net$/i], urlPattern: /icims\.com|taleo\.net/i, stepRules: [{ pattern: /personal information|contact/i, step: 'candidate' }, { pattern: /resume|attachments|questions/i, step: 'documents' }, { pattern: /application received|thank you|submission complete/i, step: 'confirmation' }] });

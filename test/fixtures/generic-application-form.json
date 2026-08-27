@@ -1,0 +1,31 @@
+{
+  "pages": [
+    {
+      "pageTitle": "Candidate details",
+      "url": "https://fixture.example/apply/details",
+      "fields": [
+        { "elementType": "input", "inputType": "text", "label": "First name", "name": "firstName", "required": true, "empty": true },
+        { "elementType": "input", "inputType": "email", "label": "Email", "name": "email", "required": true, "empty": true },
+        { "elementType": "button", "inputType": "button", "label": "Continue", "required": false, "empty": false }
+      ]
+    },
+    {
+      "pageTitle": "Documents",
+      "url": "https://fixture.example/apply/documents",
+      "fields": [
+        { "elementType": "input", "inputType": "file", "label": "Resume", "name": "resume", "required": true, "empty": true },
+        { "elementType": "input", "inputType": "file", "label": "Cover letter", "name": "coverLetter", "required": true, "empty": true },
+        { "elementType": "button", "inputType": "button", "label": "Review", "required": false, "empty": false },
+        { "elementType": "button", "inputType": "submit", "label": "Submit application", "required": false, "empty": false }
+      ]
+    },
+    {
+      "pageTitle": "Application received",
+      "url": "https://fixture.example/apply/confirmation",
+      "fields": [
+        { "elementType": "heading", "inputType": "text", "label": "Thank you for applying", "required": false, "empty": false },
+        { "elementType": "text", "inputType": "text", "label": "Confirmation number F-12345", "required": false, "empty": false }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+const { createProviderAdapter } = require('./provider.cjs');
+module.exports = createProviderAdapter({ key: 'adzuna', hosts: [/adzuna\.com$/i], urlPattern: /adzuna\.com/i, stepRules: [{ pattern: /candidate|personal|contact/i, step: 'candidate' }, { pattern: /resume|cover letter|questions|additional/i, step: 'questions' }, { pattern: /application received|thank you|submitted/i, step: 'confirmation' }] });

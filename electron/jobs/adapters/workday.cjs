@@ -1,0 +1,2 @@
+const { createProviderAdapter } = require('./provider.cjs');
+module.exports = createProviderAdapter({ key: 'workday', productionEnabled: true, hosts: [/myworkdayjobs\.com$/i, /workday\.com$/i], urlPattern: /workday/i, stepRules: [{ pattern: /personal information|contact information/i, step: 'candidate' }, { pattern: /experience|education|questionnaire/i, step: 'questions' }, { pattern: /review|submit/i, step: 'review' }, { pattern: /thank you|application received/i, step: 'confirmation' }] });

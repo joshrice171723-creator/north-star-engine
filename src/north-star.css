@@ -1,0 +1,5 @@
+/* The shared command-center shell reserves a third column for Academy. The
+   standalone career shell has no embedded browser, so its main pane fills the
+   window while retaining the existing career component styling. */
+.north-star-standalone { grid-template-columns: 210px minmax(0, 1fr); }
+.north-star-standalone .main { width: calc(100% - 210px); min-width: 0; }

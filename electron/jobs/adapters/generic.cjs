@@ -1,0 +1,2 @@
+const { normalizeSnapshot } = require('../application-inspector.cjs');
+module.exports = { key: 'generic', version: 1, matches: () => true, inspect: (context) => normalizeSnapshot(context), locateField: () => null, fillSupportedControl: () => { throw new Error('Generic adapter does not mutate forms directly.'); }, focusField: () => false, detectPageState: () => 'observing', detectConfirmation: () => null };
