@@ -205,6 +205,9 @@ const createDesktopShellApi = () => ({
   ,onGoogleVoiceNotification: (listener) => { const handler = (_event, notification) => listener(notification); ipcRenderer.on('google-voice:notification', handler); return () => ipcRenderer.removeListener('google-voice:notification', handler); }
 });
 
-contextBridge.exposeInMainWorld('desktopShell', createDesktopShellApi());
+// North Star imports this factory to apply its career-only denylist. Expose
+// the unfiltered legacy-compatible API only when Electron loads this file
+// directly for the command-center entrypoint.
+if (!module.parent) contextBridge.exposeInMainWorld('desktopShell', createDesktopShellApi());
 
 module.exports = { createDesktopShellApi };
