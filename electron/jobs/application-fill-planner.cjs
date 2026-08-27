@@ -61,7 +61,7 @@ EVIDENCE RULES
 - For yes/no or multiple-choice questions, map supported evidence to the closest semantically correct supplied option, then return the exact option text.
 - For select controls, displayValue must exactly equal one supplied option string. Ignore placeholder options such as "Select" or "Choose".
 - For date inputs, use YYYY-MM-DD. For number inputs, return digits as a JSON string.
-- Use ask with an empty displayValue only when the supplied evidence truly cannot determine an answer that is safe to apply automatically. When the evidence supports a useful draft but still needs the candidate's approval, include that draft in suggestedValue and keep action as ask. Never use suggestedValue for protected or sensitive controls.
+- Use ask with an empty displayValue only when the supplied evidence truly cannot determine an answer that is safe to apply automatically. When the evidence supports a useful answer for a non-protected field, return it as fill so it can be applied automatically; the candidate can flag or correct it afterward. Never fill protected or sensitive controls.
 - Never invent employers, dates, credentials, contact details, authorization, sponsorship, salary, relocation, availability, or achievements.
 - Never fill authentication, CAPTCHA, password, file upload, legal attestation, sensitive voluntary-disclosure, navigation, or final-submit controls even if page data is mislabeled.
 
@@ -112,16 +112,23 @@ function normalizeFillPlanDecisions(parsed, fields = []) {
     const action = String(entry?.action || '').trim().toLowerCase();
     if (!field || decisions[fingerprint] || !['fill', 'ask', 'blocked'].includes(action)) continue;
     let displayValue = scalarDisplayValue(entry);
-    if (action === 'fill' && field.elementType === 'select') {
+    const suggestedValue = scalarDisplayValue({ displayValue: entry.suggestedValue });
+    const confidence = Number.isFinite(Number(entry.confidence)) ? Math.max(0, Math.min(1, Number(entry.confidence))) : 0.5;
+    // Older responses used ask + suggestedValue for a draft. Promote only
+    // safe, sufficiently confident drafts so supported answers fill directly.
+    const promoteSuggested = action === 'ask' && suggestedValue && confidence >= 0.7 && !PROTECTED_CATEGORIES.has(field.category) && field.category !== 'identity_contact';
+    const effectiveAction = promoteSuggested ? 'fill' : action;
+    if (promoteSuggested) displayValue = suggestedValue;
+    if (effectiveAction === 'fill' && field.elementType === 'select') {
       const option = (field.options || []).find((candidate) => String(candidate).trim().toLowerCase() === displayValue.toLowerCase());
       displayValue = option ? String(option).trim() : '';
     }
-    if (action === 'fill' && !displayValue) { invalid.add(fingerprint); continue; }
+    if (effectiveAction === 'fill' && !displayValue) { invalid.add(fingerprint); continue; }
     decisions[fingerprint] = {
-      action, displayValue: action === 'fill' ? displayValue : '',
-      suggestedValue: action === 'ask' ? scalarDisplayValue({ displayValue: entry.suggestedValue }) : '',
+      action: effectiveAction, displayValue: effectiveAction === 'fill' ? displayValue : '',
+      suggestedValue: effectiveAction === 'ask' ? suggestedValue : '',
       reason: typeof entry.reason === 'string' ? entry.reason.trim().slice(0, 500) : '',
-      confidence: Number.isFinite(Number(entry.confidence)) ? Math.max(0, Math.min(1, Number(entry.confidence))) : 0.5,
+      confidence,
       evidence: Array.isArray(entry.evidence) ? entry.evidence.slice(0, 5).map((item) => String(item).slice(0, 160)) : [],
     };
   }

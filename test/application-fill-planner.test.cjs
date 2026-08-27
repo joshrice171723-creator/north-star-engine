@@ -64,10 +64,16 @@ test('decision normalization preserves scalar answers and retries incomplete or 
   assert.deepEqual(result.unresolvedFields.map((field) => field.fieldFingerprint), ['select', 'missing']);
 });
 
-test('decision normalization preserves AI drafts for user-approved answers', () => {
-  const result = normalizeFillPlanDecisions({ fields: [{ fieldFingerprint: 'question', action: 'ask', suggestedValue: 'I have built workflow automation systems.', reason: 'Supported by resume evidence.' }] }, [{ fieldFingerprint: 'question', elementType: 'textarea', category: 'free_text' }]);
+test('supported safe AI suggestions become automatic fills', () => {
+  const result = normalizeFillPlanDecisions({ fields: [{ fieldFingerprint: 'question', action: 'ask', suggestedValue: 'I have built workflow automation systems.', confidence: 0.92, reason: 'Supported by resume evidence.' }] }, [{ fieldFingerprint: 'question', elementType: 'textarea', category: 'free_text' }]);
+  assert.equal(result.decisions.question.action, 'fill');
+  assert.equal(result.decisions.question.displayValue, 'I have built workflow automation systems.');
+  assert.equal(result.unresolvedFields.length, 0);
+});
+
+test('protected AI suggestions remain unresolved', () => {
+  const result = normalizeFillPlanDecisions({ fields: [{ fieldFingerprint: 'question', action: 'ask', suggestedValue: 'Yes', confidence: 0.99 }] }, [{ fieldFingerprint: 'question', elementType: 'input', category: 'sensitive_voluntary_disclosure' }]);
   assert.equal(result.decisions.question.action, 'ask');
-  assert.equal(result.decisions.question.suggestedValue, 'I have built workflow automation systems.');
   assert.equal(result.unresolvedFields[0].fieldFingerprint, 'question');
 });
 
