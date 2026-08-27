@@ -1915,7 +1915,11 @@ function createWindow() {
       preload: path.join(__dirname, standaloneNorthStar ? 'north-star-preload.cjs' : 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: true
+      // The standalone preload imports the shared career bridge factory from
+      // a local module. Electron's sandboxed preload cannot require that
+      // module, so only North Star uses the unsandboxed preload context; the
+      // legacy command-center window remains sandboxed.
+      sandbox: !standaloneNorthStar
     }
   });
 
@@ -3562,7 +3566,7 @@ async function drainApplicationPreparationQueue() {
   setAuditPersistence((entry) => coachDatabase.recordApiCall(entry));
   ipcMain.handle('jobs:search', async (_event, input = {}) => {
     const profile = coachDatabase.profiles.getCurrent();
-    const resume = coachDatabase.resumes.getMaster();
+    const resume = coachDatabase.resumes.getMaster() || {};
     if (!profile?.targetRoles?.length && !profile?.targetLocations?.length && !profile?.interests?.length) return { ok: false, needsProfile: true, error: 'Add a target role, location, or interest to your profile first.' };
     const runId = coachDatabase.createJobSearchRun();
     setAuditRun(runId);
