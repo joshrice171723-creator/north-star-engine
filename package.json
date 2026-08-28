@@ -10,8 +10,6 @@
     "test": "node scripts/run-applicable-tests.cjs",
     "test:all": "node --test test/*.test.cjs",
     "audit:extraction": "node scripts/audit-extraction-boundary.cjs",
-    "lighthouse:server": "node scripts/lighthouse-server.cjs",
-    "lighthouse:dev": "cross-env LIGHTHOUSE_DEV_MODE=1 node scripts/lighthouse-server.cjs",
     "desktop": "concurrently -k -s first \"npm run start\" \"wait-on http://127.0.0.1:5174 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5174 electron .\"",
     "desktop:north-star": "concurrently -k -s first \"npm run start\" \"wait-on http://127.0.0.1:5174 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5174 electron .\"",
     "desktop:prod": "npm run build && electron .",

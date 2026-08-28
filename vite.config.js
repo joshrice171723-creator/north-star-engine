@@ -8,9 +8,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        northStar: resolve(__dirname, 'north-star.html'),
-        lighthouse: resolve(__dirname, 'lighthouse.html'),
-        lighthousePartner: resolve(__dirname, 'lighthouse-partner.html')
+        northStar: resolve(__dirname, 'north-star.html')
       }
     }
   }

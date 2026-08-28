@@ -54,7 +54,6 @@ const { createRepairLoop } = require('./jobs/automation/repair-loop.cjs');
 const { makeIdempotencyKey } = require('./jobs/automation/idempotency.cjs');
 const { createApplicationQueueService } = require('./jobs/application-queue-service.cjs');
 const { createApplyPilotBridge } = require('./jobs/applypilot-bridge.cjs');
-const { createOrganizationPlatform } = require('./organization-platform.cjs');
 const { selectAdapter } = require('./jobs/adapters/index.cjs');
 const { MAX_RESUME_CHARS, parseFillPlanResponse, repairFillPlanMessages, aiCandidateFields, buildFillPlanMessages, normalizeFillPlanDecisions } = require('./jobs/application-fill-planner.cjs');
 const { buildRecoveryMessages, parseRecoveryResponse } = require('./jobs/application-recovery-planner.cjs');
@@ -88,7 +87,6 @@ let applicationBrowser;
 let applicationWorkflowOrchestrator;
 let applicationQueueService;
 let applyPilotBridge;
-let organizationPlatform;
 // Assigned when database IPC handlers are registered; the durable queue is
 // created earlier during startup and needs to call the same preparation path.
 let prepareJobApplication;
@@ -2834,21 +2832,6 @@ function deleteLocalVideo(id) {
 }
 
 function registerDatabaseIpc() {
-  ipcMain.handle('organization:bootstrap', (event, input = {}) => { assertTrustedRenderer(event); const organization = organizationPlatform.createOrganization(input); const membership = organizationPlatform.addStaff({ organizationId: organization.id, email: input.email, displayName: input.displayName, role: 'owner' }); return organizationPlatform.createStaffSession({ membershipId: membership.id }); });
-  ipcMain.handle('organization:staff:add', (event, input) => { assertTrustedRenderer(event); return organizationPlatform.addStaff(input); });
-  ipcMain.handle('organization:staff:add-for-session', (event, sessionToken, input) => { assertTrustedRenderer(event); return organizationPlatform.addStaffForSession(sessionToken, input); });
-  ipcMain.handle('organization:location:create', (event, sessionToken, input) => { assertTrustedRenderer(event); return organizationPlatform.createLocation(sessionToken, input); });
-  ipcMain.handle('organization:locations:list', (event, sessionToken) => { assertTrustedRenderer(event); return organizationPlatform.listLocations(sessionToken); });
-  ipcMain.handle('organization:invite:create', (event, sessionToken, input) => { assertTrustedRenderer(event); return organizationPlatform.createInvite(sessionToken, input); });
-  ipcMain.handle('organization:invite:redeem', (event, input) => { assertTrustedRenderer(event); return organizationPlatform.redeemInvite(input); });
-  ipcMain.handle('organization:participant:me', (event, sessionToken) => { assertTrustedRenderer(event); return organizationPlatform.participantFromSession(sessionToken); });
-  ipcMain.handle('organization:extension:issue', (event, sessionToken) => { assertTrustedRenderer(event); return organizationPlatform.createExtensionLink(sessionToken); });
-  ipcMain.handle('organization:extension:claim', (event, input) => { assertTrustedRenderer(event); return organizationPlatform.claimExtensionLink(input); });
-  ipcMain.handle('organization:oauth:state:create', (event, input) => { assertTrustedRenderer(event); return organizationPlatform.createOAuthState(input); });
-  ipcMain.handle('organization:oauth:state:consume', (event, input) => { assertTrustedRenderer(event); return organizationPlatform.consumeOAuthState(input); });
-  ipcMain.handle('organization:dashboard', (event, sessionToken) => { assertTrustedRenderer(event); return organizationPlatform.dashboard(sessionToken); });
-  ipcMain.handle('organization:participants:list', (event, sessionToken) => { assertTrustedRenderer(event); return organizationPlatform.listParticipants(sessionToken); });
-  ipcMain.handle('organization:event', (event, sessionToken, eventType, metadata) => { assertTrustedRenderer(event); return organizationPlatform.recordParticipantEvent(sessionToken, eventType, metadata); });
   ipcMain.handle('video-factory:create', (event, input) => { assertTrustedRenderer(event); return createLocalVideo(input); });
   ipcMain.handle('video-factory:create-test', (event) => { assertTrustedRenderer(event); return createTestVideo(); });
   ipcMain.handle('video-factory:discover', (event, input) => { assertTrustedRenderer(event); return discoverVideoFactorySources(input); });
@@ -3785,7 +3768,6 @@ app.whenReady().then(() => {
   migrateOpenRouterEnvironmentKey();
   const careerDocumentsPath = path.join(app.getPath('userData'), 'application-documents');
   coachDatabase = createDatabase({ userDataPath: app.getPath('userData'), applicationDocumentsPath: careerDocumentsPath, seedPath: roadmapSeedPath, masterResumeSourcePath: path.join(app.getPath('userData'), 'master-resume.pdf'), careerOnly: true });
-  organizationPlatform = createOrganizationPlatform({ databasePath: path.join(app.getPath('userData'), 'organization-platform.sqlite') });
   coachDatabase.applications.recoverAutomation?.();
   applicationQueueService = createApplicationQueueService({ repository: coachDatabase.applications.queue, worker: processDurableApplicationQueueItem });
   applyPilotBridge = createApplyPilotBridge({ version: app.getVersion() });
@@ -3835,6 +3817,6 @@ app.whenReady().then(() => {
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
-app.on('will-quit', () => { isQuitting = true; if (emailMonitorTimer) clearInterval(emailMonitorTimer); if (applicationPreparationTimer) clearInterval(applicationPreparationTimer); for (const timer of submissionVerificationTimers.values()) clearTimeout(timer); submissionVerificationTimers.clear(); stopGoogleVoiceMonitor(); try { googleVoiceTray?.destroy(); } catch {} try { applyPilotBridge?.stop(); } catch {} try { organizationPlatform?.close(); } catch {} try { coachDatabase?.close(); } catch { /* best effort */ } });
+app.on('will-quit', () => { isQuitting = true; if (emailMonitorTimer) clearInterval(emailMonitorTimer); if (applicationPreparationTimer) clearInterval(applicationPreparationTimer); for (const timer of submissionVerificationTimers.values()) clearTimeout(timer); submissionVerificationTimers.clear(); stopGoogleVoiceMonitor(); try { googleVoiceTray?.destroy(); } catch {} try { applyPilotBridge?.stop(); } catch {} try { coachDatabase?.close(); } catch { /* best effort */ } });
 
 module.exports = { isAllowedAcademyUrl };

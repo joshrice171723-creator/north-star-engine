@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Brain, BriefcaseBusiness, ChevronRight, Mail, Users } from 'lucide-react';
+import { Brain, BriefcaseBusiness, ChevronRight, Mail } from 'lucide-react';
 import { createRoot } from 'react-dom/client';
 import JobsView from './JobsView.jsx';
 import InterviewPrepView from './InterviewPrepView.jsx';
 import GroupedEmailMonitorPanel from './jobs/EmailMonitorPanel.jsx';
-import OrganizationPortal from './OrganizationPortal.jsx';
 import './styles.css';
 import './theme.css';
 import './north-star.css';
@@ -44,7 +43,6 @@ function NorthStarApp() {
       <nav>
         <button className={view === 'jobs' ? 'nav active' : 'nav'} onClick={() => { setJobDetailsOpen(null); setView('jobs'); }}><BriefcaseBusiness size={17}/> Job search <em>{jobs.filter((job) => !['accepted', 'rejected'].includes(job.stage)).length}</em></button>
         <button className={view === 'interview-prep' ? 'nav active' : 'nav'} onClick={() => setView('interview-prep')}><Brain size={17}/> Interview coach</button>
-        <button className={view === 'organization' ? 'nav active' : 'nav'} onClick={() => setView('organization')} title="Open the partner control plane. Staff see aggregate participant metrics and can issue secure invites; individual career records stay private."><Users size={17}/> Partner workspace</button>
       </nav>
       <div className="path-card"><div className="path-symbol"><Mail size={16}/></div><div><b>Local-first</b><small>Career data stays on this device</small></div><ChevronRight size={15}/></div>
       <div className="sidebar-footer"><div className="local-badge"><span className="local-dot"/> Standalone North Star</div></div>
@@ -54,7 +52,6 @@ function NorthStarApp() {
       <div className="main-scroll">
         {view === 'jobs' && <>{!jobDetailsOpen && <GroupedEmailMonitorPanel jobs={jobs} />}<JobsView jobs={jobs} onRefresh={refreshJobs} onDetailChange={setJobDetailsOpen} /></>}
         {view === 'interview-prep' && <InterviewPrepView jobs={jobs} onOpenJobs={() => { setJobDetailsOpen(null); setView('jobs'); }} />}
-        {view === 'organization' && <OrganizationPortal />}
       </div>
     </main>
   </div>;
