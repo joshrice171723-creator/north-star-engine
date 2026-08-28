@@ -25,7 +25,7 @@ const legacyOnlyApi = new Set([
   'recordOutreachReply', 'listOutreachFollowups', 'getOutreachMetrics',
   'discoverOutreachContacts', 'getGoogleVoiceStatus', 'setGoogleVoiceEnabled',
   'openGoogleVoice', 'setGoogleVoiceVisible', 'testGoogleVoiceNotification',
-  'onGoogleVoiceNotification', 'onAppBack'
+  'onGoogleVoiceNotification'
 ]);
 
 const api = createDesktopShellApi();

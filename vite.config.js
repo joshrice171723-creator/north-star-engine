@@ -7,7 +7,11 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      input: resolve(__dirname, 'north-star.html')
+      input: {
+        northStar: resolve(__dirname, 'north-star.html'),
+        lighthouse: resolve(__dirname, 'lighthouse.html'),
+        lighthousePartner: resolve(__dirname, 'lighthouse-partner.html')
+      }
     }
   }
 });

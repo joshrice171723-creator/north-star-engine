@@ -182,6 +182,21 @@ const audioFormatFromMimeType = (mimeType = '') => {
 const VOICE_SPEECH_THRESHOLD = 0.035;
 const VOICE_SILENCE_MS = 900;
 
+function ApplyPilotBridgePanel() {
+  const [status, setStatus] = useState('');
+  const refresh = async () => {
+    const result = await window.desktopShell?.getApplyPilotConnectionStatus?.();
+    if (result?.signal?.state) setStatus(`${result.signal.state === 'green' ? '🟢' : '🔴'} ${result.signal.state === 'green' ? 'Green' : 'Red'} light from ${result.signal.source === 'applypilot' ? 'ApplyPilot' : 'North Star'}.`);
+  };
+  useEffect(() => { refresh(); const timer = setInterval(refresh, 1000); return () => clearInterval(timer); }, []);
+  const check = async () => {
+    const result = await window.desktopShell?.getApplyPilotConnectionStatus?.();
+    setStatus(result?.running ? `🟢 Green light: ApplyPilot bridge is listening on ${result.host}:${result.port}.` : `🔴 ApplyPilot bridge unavailable${result?.lastError ? ` — ${result.lastError}` : '.'}`);
+  };
+  const setSignal = async (state) => { const result = await window.desktopShell?.setApplyPilotSignal?.(state); setStatus(`${state === 'green' ? '🟢' : '🔴'} ${state === 'green' ? 'Green' : 'Red'} light sent to ApplyPilot.`); if (!result?.running) setStatus('🔴 ApplyPilot bridge unavailable.'); };
+  return <section className="jobs-preparation-panel" aria-live="polite"><div className="jobs-preparation-main"><div className="jobs-preparation-indicator"><Check size={18} /></div><div className="jobs-preparation-copy"><span className="eyebrow">APPLYPILOT BRIDGE</span><h3>Shared connection signal</h3><p>{status || 'Either product can change the shared signal.'}</p></div></div><div className="jobs-preparation-controls"><button className="secondary" onClick={() => setSignal('green')}>🟢 Green light</button><button className="secondary" onClick={() => setSignal('red')}>🔴 Red light</button><button className="secondary" onClick={check}>Refresh</button></div></section>;
+}
+
 function VoiceTestPanel() {
   const [phase, setPhase] = useState('IDLE');
   const [messages, setMessages] = useState([]);
@@ -330,7 +345,7 @@ function VoiceTestPanel() {
   };
   const active = sessionActive.current;
   const phaseLabel = { LISTENING: 'Listening…', USER_SPEAKING: 'Listening to you…', END_OF_SPEECH_DETECTED: 'Finishing your turn…', TRANSCRIBING: 'Transcribing…', LUNA_THINKING: 'Luna is thinking…', GENERATING_SPEECH: 'Preparing Luna’s voice…', AI_SPEAKING: 'Luna is speaking…', IDLE: 'Ready' }[phase] || phase;
-  return <section className="voice-test-panel" aria-live="polite"><div><span className="eyebrow">LUNA VOICE · HANDS-FREE</span><h3>Have a conversation with Luna</h3><p>Tap once to start. Speak naturally and pause when you’re done; Luna will detect the pause, answer out loud, and listen again automatically.</p></div><div className="voice-test-controls"><button className={active ? 'secondary' : 'primary'} onClick={active ? stop : start}>{active ? <><Square size={15} /> End Conversation</> : <><Mic size={15} /> Start Conversation</>}</button><small className={`voice-test-status ${phase === 'IDLE' ? 'ready' : ''}`}>{active ? phaseLabel : 'Ready'}</small></div>{messages.length > 0 && <div className="voice-test-message-list">{messages.map((message, index) => <div className={`voice-test-message ${message.speaker}`} key={`${message.speaker}-${index}`}><b>{message.speaker === 'you' ? 'You' : 'Luna'}</b><p>“{message.text}”</p></div>)}</div>}{error && <p className="voice-test-error">{error}</p>}</section>;
+  return <><ApplyPilotBridgePanel /><section className="voice-test-panel" aria-live="polite"><div><span className="eyebrow">LUNA VOICE · HANDS-FREE</span><h3>Have a conversation with Luna</h3><p>Tap once to start. Speak naturally and pause when you’re done; Luna will detect the pause, answer out loud, and listen again automatically.</p></div><div className="voice-test-controls"><button className={active ? 'secondary' : 'primary'} onClick={active ? stop : start}>{active ? <><Square size={15} /> End Conversation</> : <><Mic size={15} /> Start Conversation</>}</button><small className={`voice-test-status ${phase === 'IDLE' ? 'ready' : ''}`}>{active ? phaseLabel : 'Ready'}</small></div>{messages.length > 0 && <div className="voice-test-message-list">{messages.map((message, index) => <div className={`voice-test-message ${message.speaker}`} key={`${message.speaker}-${index}`}><b>{message.speaker === 'you' ? 'You' : 'Luna'}</b><p>“{message.text}”</p></div>)}</div>}{error && <p className="voice-test-error">{error}</p>}</section></>;
 }
 
 function EmailMonitorPanel({ jobs: allJobs = [] }) {

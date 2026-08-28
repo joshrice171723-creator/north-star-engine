@@ -116,8 +116,8 @@ test('renderer exposes the claimed assistant and explicit review/submission boun
   assert.match(preload, /submitApplication/);
   const panel = read('src/jobs/ApplicationBrowserPanel.jsx');
   assert.match(panel, /claimApplicationAssistant\?\.\(\{ applicationId \}\)/);
-  assert.match(panel, /Run safe autopilot/);
-  assert.match(panel, /Review fill plan/);
+  assert.match(panel, /Safe autopilot/);
+  assert.match(panel, /Build fill details/);
   assert.match(panel, /Upload approved documents/);
   assert.match(panel, /Submit application/);
   assert.match(panel, /userApproved: true/);

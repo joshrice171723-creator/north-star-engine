@@ -7,9 +7,9 @@ test('extraction boundary audit passes and reports unresolved physical ownership
   const script = path.join(__dirname, '..', 'scripts', 'audit-extraction-boundary.cjs');
   const output = execFileSync(process.execPath, [script], { encoding: 'utf8' });
   const report = JSON.parse(output);
-  assert.equal(report.rendererEntrypoints.northStar, 'north-star.html -> src/north-star.jsx');
-  assert.equal(report.physicalDatabaseSplit, false);
-  assert.equal(report.legacyMainProcessStillContainsCareerHandlers, true);
+  assert.equal(report.renderer, 'src/north-star.jsx');
+  assert.equal(report.preload, 'electron/north-star-preload.cjs');
+  assert.equal(report.databasePath, '%APPDATA%\\NorthStar\\executive-coach.sqlite');
   assert.ok(report.careerTables.includes('job_applications'));
-  assert.ok(report.legacyTables.includes('projects'));
+  assert.ok(report.legacyTablesExcluded.includes('projects'));
 });
